@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand colors from Zevix -->
+    <color name="accent_color">#0dac08</color>
+    <color name="accent_color_pressed">#0a8a06</color>
+    <color name="colorPrimary">#000000</color>
+    <color name="colorPrimaryDark">#000000</color>
+    <color name="colorAccent">#0dac08</color>
+    
+    <!-- UI Surface colors - Pure Dark Black AMOLED -->
+    <color name="bg_main">#000000</color>
+    <color name="bg_card">#0d0d0d</color>
+    <color name="bg_card_selected">#1f2430</color>
+    <color name="bg_bottom_bar">#000000</color>
+    <color name="bg_player_control">#a6000000</color>
+    <color name="bg_dialog">#121212</color>
+    <color name="bg_popup">#181818</color>
+    <color name="divider_line">#1c1c1c</color>
+
+    <!-- Text colors -->
+    <color name="white">#ffffffff</color>
+    <color name="black">#ff000000</color>
+    <color name="icon_primary">#ffffffff</color>
+    <color name="text_primary">#ffffffff</color>
+    <color name="text_secondary">#9aa0b0</color>
+    <color name="text_muted">#666c80</color>
+    <color name="text_accent">#0dac08</color>
+    <color name="yellow_boost">#ffae00</color>
+
+    <!-- Player overlay & gestures -->
+    <color name="overlay_hud_bg">#b3000000</color>
+    <color name="player_progress_buffered">#4dffffff</color>
+    <color name="player_progress_played">#0dac08</color>
+    <color name="night_mode_mask">#99000000</color>
+    <color name="color_999">#999999</color>
+    <color name="color_2a">#181818</color>
+</resources>

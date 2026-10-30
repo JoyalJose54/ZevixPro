@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp">
+
+    <CheckBox
+        android:id="@+id/cb_clean_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:buttonTint="@color/accent_color"
+        android:clickable="false"
+        android:focusable="false" />
+
+    <FrameLayout
+        android:id="@+id/card_clean_thumb"
+        android:layout_width="88dp"
+        android:layout_height="52dp"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="12dp"
+        android:layout_toEndOf="@id/cb_clean_item">
+
+        <ImageView
+            android:id="@+id/iv_clean_thumb"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/play_png" />
+
+        <TextView
+            android:id="@+id/tv_clean_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="3dp"
+            android:background="#B1000000"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:text="00:00"
+            android:textColor="@color/white"
+            android:textSize="10sp" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="14dp"
+        android:layout_toEndOf="@id/card_clean_thumb"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_clean_item_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="middle"
+            android:singleLine="true"
+            android:text="Video Title"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_clean_item_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:text="125 MB • Oct 24, 2026"
+            android:textColor="#888888"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/tv_clean_item_path"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:ellipsize="middle"
+            android:singleLine="true"
+            android:text="/storage/emulated/0/Movies"
+            android:textColor="#555555"
+            android:textSize="11sp" />
+    </LinearLayout>
+
+</RelativeLayout>
+

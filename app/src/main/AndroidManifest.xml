@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Storage and Media Permissions -->
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" tools:ignore="ScopedStorage" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
+
+    <!-- Audio & System permissions -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+
+    <application
+        android:name=".ZevixApplication"
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher"
+        android:supportsRtl="true"
+        android:requestLegacyExternalStorage="true"
+        android:theme="@style/Theme.ZevixPro">
+
+        <!-- Splash Screen Activity (Launcher) -->
+        <activity
+            android:name=".ui.SplashActivity"
+            android:exported="true"
+            android:theme="@style/Theme.App.Starting">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Main Video Explorer Activity -->
+        <activity
+            android:name=".ui.MainActivity"
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.ZevixPro" />
+
+        <!-- Folder Videos Activity -->
+        <activity
+            android:name=".ui.FolderVideosActivity"
+            android:exported="false"
+            android:theme="@style/Theme.ZevixPro" />
+
+        <!-- Fullscreen Video Player Activity -->
+        <activity
+            android:name=".ui.PlayerActivity"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|uiMode|keyboardHidden|keyboard"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:resizeableActivity="true"
+            android:showWhenLocked="true"
+            android:supportsPictureInPicture="true"
+            android:theme="@style/Theme.ZevixPro.Player"
+            android:turnScreenOn="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:mimeType="video/*" />
+            </intent-filter>
+        </activity>
+
+        <!-- Private Folder Activity (PIN Vault) -->
+        <activity
+            android:name=".ui.FileProtectionActivity"
+            android:exported="false"
+            android:theme="@style/Theme.ZevixPro" />
+
+        <!-- Music Player Activity -->
+        <activity
+            android:name=".ui.MusicPlayActivity"
+            android:exported="false"
+            android:theme="@style/Theme.ZevixPro" />
+
+        <!-- Trash Activity -->
+        <activity
+            android:name=".ui.TrashActivity"
+            android:exported="false"
+            android:theme="@style/Theme.ZevixPro" />
+
+        <!-- Private Vault Activity -->
+        <activity
+            android:name=".ui.PrivateVaultActivity"
+            android:exported="false"
+            android:theme="@style/Theme.ZevixPro" />
+
+        <!-- Playlist Detail Activity -->
+        <activity
+            android:name=".ui.PlaylistDetailActivity"
+            android:exported="false"
+            android:theme="@style/Theme.ZevixPro" />
+
+        <!-- Equalizer Activity -->
+        <activity
+            android:name=".ui.EqualizerActivity"
+            android:exported="false"
+            android:theme="@style/Theme.ZevixPro" />
+
+        <!-- Theme Activity -->
+        <activity
+            android:name=".ui.ThemeActivity"
+            android:exported="false"
+            android:theme="@style/Theme.ZevixPro" />
+
+        <!-- Settings Activity -->
+        <activity
+            android:name=".ui.SettingsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.ZevixPro" />
+
+        <!-- App Lock Verify Activity -->
+        <activity
+            android:name=".ui.AppLockVerifyActivity"
+            android:exported="false"
+            android:theme="@style/Theme.ZevixPro"
+            android:launchMode="singleTop" />
+
+        <!-- App Lock Setup Activity -->
+        <activity
+            android:name=".ui.AppLockSetupActivity"
+            android:exported="false"
+            android:theme="@style/Theme.ZevixPro" />
+
+        <!-- Cleaner Home Activity -->
+        <activity
+            android:name=".ui.CleanerHomeActivity"
+            android:exported="false"
+            android:theme="@style/Theme.ZevixPro" />
+
+        <!-- Cleaner Delete Activity -->
+        <activity
+            android:name=".ui.CleanerDeleteActivity"
+            android:exported="false"
+            android:theme="@style/Theme.ZevixPro" />
+
+    </application>
+
+</manifest>
+

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="72dp"
+    android:background="?android:attr/selectableItemBackground"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingHorizontal="16dp">
+
+    <!-- Thumbnail Container -->
+    <RelativeLayout
+        android:layout_width="88dp"
+        android:layout_height="52dp">
+
+        <ImageView
+            android:id="@+id/iv_queue_thumb"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#222"
+            android:scaleType="centerCrop" />
+
+        <TextView
+            android:id="@+id/tv_queue_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="2dp"
+            android:background="#99000000"
+            android:paddingHorizontal="4dp"
+            android:paddingVertical="1dp"
+            android:text="00:00"
+            android:textColor="@color/white"
+            android:textSize="10sp" />
+    </RelativeLayout>
+
+    <!-- Title and playing indicator -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_queue_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:text="Video title"
+            android:textColor="@color/white"
+            android:textSize="13sp" />
+    </LinearLayout>
+
+    <!-- Close / remove from queue -->
+    <ImageView
+        android:id="@+id/iv_queue_remove"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:background="@drawable/bg_common_btn_light"
+        android:padding="8dp"
+        android:src="@drawable/ic_close" />
+</LinearLayout>
+

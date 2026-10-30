@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/speed2xLayout"
+    android:layout_width="wrap_content"
+    android:layout_height="32dp"
+    android:layout_centerHorizontal="true"
+    android:layout_marginTop="36dp"
+    android:background="@drawable/bg_player_popup_round4dp"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingHorizontal="12dp"
+    android:visibility="gone">
+
+    <ImageView
+        android:id="@+id/speed2xImg1"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:alpha="0.3"
+        android:src="@drawable/ic_long_press_ff" />
+
+    <ImageView
+        android:id="@+id/speed2xImg2"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:alpha="0.6"
+        android:src="@drawable/ic_long_press_ff" />
+
+    <ImageView
+        android:id="@+id/speed2xImg3"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:src="@drawable/ic_long_press_ff" />
+
+    <TextView
+        android:id="@+id/speed2xText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        android:text="2.0X"
+        android:textColor="@color/accent_color"
+        android:textSize="13sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:text="Speed Playing"
+        android:textColor="@color/white"
+        android:textSize="13sp" />
+</LinearLayout>
+

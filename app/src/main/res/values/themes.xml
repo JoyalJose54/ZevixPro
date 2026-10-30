@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base Application Theme -->
+    <style name="Theme.ZevixPro" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/accent_color</item>
+        <item name="android:windowBackground">@color/bg_main</item>
+        <item name="android:statusBarColor">@color/colorPrimaryDark</item>
+        <item name="android:navigationBarColor">@color/colorPrimaryDark</item>
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
+        <item name="bottomMenuIconTint">@color/white</item>
+    </style>
+
+    <!-- Fullscreen Video Player Theme -->
+    <style name="Theme.ZevixPro.Player" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:windowBackground">@android:color/black</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:keepScreenOn">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+    </style>
+
+    <!-- Vertical Progress Bar for Volume & Brightness Gestures -->
+    <style name="SoundProgressBarVertical" parent="">
+        <item name="android:focusable">false</item>
+        <item name="android:maxWidth">6dp</item>
+        <item name="android:indeterminateOnly">false</item>
+        <item name="android:indeterminateDrawable">@drawable/sound_progress</item>
+        <item name="android:progressDrawable">@drawable/sound_progress</item>
+        <item name="android:minWidth">6dp</item>
+        <item name="android:thumb">@null</item>
+    </style>
+
+    <!-- Custom Dialog Theme -->
+    <style name="Theme.ZevixPro.Dialog" parent="Theme.MaterialComponents.DayNight.Dialog">
+        <item name="android:windowBackground">@drawable/bg_dialog_rounded</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="colorAccent">@color/accent_color</item>
+    </style>
+
+    <!-- AndroidX SplashScreen Theme -->
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#000000</item>
+        <item name="windowSplashScreenAnimatedIcon">@android:color/transparent</item>
+        <item name="windowSplashScreenAnimationDuration">1</item>
+        <item name="postSplashScreenTheme">@style/Theme.ZevixPro</item>
+    </style>
+
+    <!-- Keypad Button Style - Small Circle Bubble -->
+    <style name="PinKeypadButton">
+        <item name="android:layout_width">72dp</item>
+        <item name="android:layout_height">72dp</item>
+        <item name="android:layout_columnWeight">1</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">28sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:background">@drawable/bg_pin_key_compact</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:layout_margin">8dp</item>
+    </style>
+
+    <!-- Bottom Sheet Dialog Theme -->
+    <style name="BottomSheetDialogTheme" parent="Theme.Design.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/BottomSheetModalStyle</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackground">@android:color/transparent</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:backgroundDimAmount">0.6</item>
+    </style>
+
+    <style name="BottomSheetModalStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
+    <style name="playerDialogDivider">
+        <item name="android:background">@color/color_2a</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+    </style>
+
+    <!-- Right-Side Sheet Dialog Theme (for Player Landscape Mode) -->
+    <style name="Animation.SideSheet.Right" parent="">
+        <item name="android:windowEnterAnimation">@anim/right_in</item>
+        <item name="android:windowExitAnimation">@anim/right_out</item>
+    </style>
+
+    <style name="Theme.Zevix.SideSheet" parent="Theme.MaterialComponents.DayNight.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:backgroundDimAmount">0.5</item>
+    </style>
+</resources>
+

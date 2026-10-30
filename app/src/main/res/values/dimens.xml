@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="play_tool_width">60dp</dimen>
+    <dimen name="play_tool_more_width">40dp</dimen>
+    <dimen name="margin_video_next">30dp</dimen>
+</resources>
+

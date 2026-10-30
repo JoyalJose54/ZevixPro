@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:height="24dp"
+    android:width="24dp"
+    android:autoMirrored="true"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <group
+        android:translateX="-32"
+        android:translateY="-80">
+        <group
+            android:translateX="32"
+            android:translateY="80">
+            <path
+                android:fillColor="#333333"
+                android:pathData="M17.5967544,22 C16.4939774,22 16.2342508,21.3657492 17.0184877,20.5815123 L25.3815123,12.2184877 C26.1649214,11.4350786 26.1646367,10.1646367 25.3835941,9.38359408 L25.4164059,9.41640592 C24.6341465,8.63414653 23.372781,8.62721896 22.5801067,9.41989326 L9.41989326,22.5801067 C8.63570787,23.3642921 8.62721896,24.627219 9.41989326,25.4198933 L22.5801067,38.5801067 C23.3642921,39.3642921 24.6353633,39.3646367 25.4164059,38.5835941 L25.3835941,38.6164059 C26.1658535,37.8341465 26.1657492,36.5657492 25.3815123,35.7815123 L17.0184877,27.4184877 C16.2350786,26.6350786 16.4973466,26 17.5967544,26 L38.0032456,26 C39.1060226,26 40,25.1122704 40,24 L40,24 C40,22.8954305 39.1026534,22 38.0032456,22 L17.5967544,22 Z"
+                android:strokeWidth="1"
+                android:fillType="evenOdd"/>
+        </group>
+    </group>
+</vector>

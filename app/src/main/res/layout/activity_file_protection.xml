@@ -1,0 +1,452 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/protect_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black">
+
+    <!-- 1. PIN Lock / Setup Screen -->
+    <LinearLayout
+        android:id="@+id/layout_pin"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- Toolbar -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:paddingHorizontal="16dp">
+
+            <ImageView
+                android:id="@+id/btn_pin_back"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_centerVertical="true"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="8dp"
+                android:src="@drawable/ic_back"
+                app:tint="@color/white" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="16dp"
+                android:layout_toEndOf="@id/btn_pin_back"
+                android:fontFamily="sans-serif-medium"
+                android:text="Private Folder"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+        </RelativeLayout>
+
+        <!-- Top PIN Status Section -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp">
+
+            <ImageView
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:src="@drawable/ic_lock"
+                app:tint="@color/accent_color" />
+
+            <TextView
+                android:id="@+id/tv_pin_prompt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:fontFamily="sans-serif-medium"
+                android:text="Enter your 4-digit PIN"
+                android:textColor="@color/white"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/tv_pin_hint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Files here are hidden and protected"
+                android:textColor="#9e9e9e"
+                android:textSize="13sp" />
+
+            <!-- 4 PIN Dots -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/dot_1"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/bg_pin_dot_empty" />
+
+                <ImageView
+                    android:id="@+id/dot_2"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginStart="24dp"
+                    android:src="@drawable/bg_pin_dot_empty" />
+
+                <ImageView
+                    android:id="@+id/dot_3"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginStart="24dp"
+                    android:src="@drawable/bg_pin_dot_empty" />
+
+                <ImageView
+                    android:id="@+id/dot_4"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginStart="24dp"
+                    android:src="@drawable/bg_pin_dot_empty" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Numeric Keypad Grid -->
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:columnCount="3"
+            android:paddingHorizontal="24dp"
+            android:rowCount="4">
+
+            <!-- Row 1: 1, 2, 3 -->
+            <TextView
+                android:id="@+id/key_1"
+                style="@style/PinKeypadButton"
+                android:text="1" />
+
+            <TextView
+                android:id="@+id/key_2"
+                style="@style/PinKeypadButton"
+                android:text="2" />
+
+            <TextView
+                android:id="@+id/key_3"
+                style="@style/PinKeypadButton"
+                android:text="3" />
+
+            <!-- Row 2: 4, 5, 6 -->
+            <TextView
+                android:id="@+id/key_4"
+                style="@style/PinKeypadButton"
+                android:text="4" />
+
+            <TextView
+                android:id="@+id/key_5"
+                style="@style/PinKeypadButton"
+                android:text="5" />
+
+            <TextView
+                android:id="@+id/key_6"
+                style="@style/PinKeypadButton"
+                android:text="6" />
+
+            <!-- Row 3: 7, 8, 9 -->
+            <TextView
+                android:id="@+id/key_7"
+                style="@style/PinKeypadButton"
+                android:text="7" />
+
+            <TextView
+                android:id="@+id/key_8"
+                style="@style/PinKeypadButton"
+                android:text="8" />
+
+            <TextView
+                android:id="@+id/key_9"
+                style="@style/PinKeypadButton"
+                android:text="9" />
+
+            <!-- Row 4: Biometric Trigger, 0, Backspace -->
+            <FrameLayout
+                android:id="@+id/btn_biometric_trigger"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:layout_margin="8dp"
+                android:layout_gravity="center"
+                android:layout_columnWeight="1"
+                android:background="@drawable/bg_pin_key_compact"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_fingerprint"
+                    app:tint="@color/white" />
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/key_0"
+                style="@style/PinKeypadButton"
+                android:text="0" />
+
+            <FrameLayout
+                android:id="@+id/key_backspace"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:layout_margin="8dp"
+                android:layout_gravity="center"
+                android:layout_columnWeight="1"
+                android:background="@drawable/bg_pin_key_compact"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="22dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_backspace"
+                    app:tint="@color/white" />
+            </FrameLayout>
+        </GridLayout>
+
+        <!-- Cancel button matching photo -->
+        <TextView
+            android:id="@+id/btn_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="28dp"
+            android:background="?attr/selectableItemBackground"
+            android:paddingHorizontal="24dp"
+            android:paddingVertical="10dp"
+            android:text="Cancel"
+            android:textColor="#88ffffff"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <!-- 2. Private Vault Content Screen (Matching Photo 1 & 2) -->
+    <RelativeLayout
+        android:id="@+id/layout_vault"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black"
+        android:visibility="gone">
+
+        <!-- Header: Frame containing Normal Toolbar & Select Toolbar -->
+        <FrameLayout
+            android:id="@+id/vault_toolbar_container"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_alignParentTop="true"
+            android:background="@color/black">
+
+            <!-- Normal Toolbar (Matching Photo 1) -->
+            <RelativeLayout
+                android:id="@+id/toolbar_vault_normal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingHorizontal="8dp">
+
+                <ImageView
+                    android:id="@+id/btn_vault_back"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_back"
+                    app:tint="@color/white" />
+
+                <TextView
+                    android:id="@+id/tv_vault_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="8dp"
+                    android:layout_toEndOf="@id/btn_vault_back"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="Private Videos"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentEnd="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <!-- Cast -->
+                    <ImageView
+                        android:id="@+id/btn_vault_cast"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:padding="8dp"
+                        android:src="@drawable/ic_cast"
+                        app:tint="@color/white" />
+
+                    <!-- Style Toggle (Grid / List) -->
+                    <ImageView
+                        android:id="@+id/btn_vault_style"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:padding="8dp"
+                        android:src="@drawable/ic_layout_grid_menu"
+                        app:tint="@color/white" />
+
+                    <!-- 3-Dots More -->
+                    <ImageView
+                        android:id="@+id/btn_vault_more"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:padding="8dp"
+                        android:src="@drawable/ic_more"
+                        app:tint="@color/white" />
+                </LinearLayout>
+            </RelativeLayout>
+
+            <!-- Multi-Selection Toolbar -->
+            <RelativeLayout
+                android:id="@+id/toolbar_vault_select"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#1a1a1a"
+                android:paddingHorizontal="8dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:id="@+id/btn_select_close"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_clear"
+                    app:tint="@color/white" />
+
+                <TextView
+                    android:id="@+id/tv_select_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="8dp"
+                    android:layout_toEndOf="@id/btn_select_close"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="1 selected"
+                    android:textColor="@color/white"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentEnd="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <!-- Move to Public / Unhide -->
+                    <ImageView
+                        android:id="@+id/btn_action_restore"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Move out of folder"
+                        android:padding="8dp"
+                        android:src="@drawable/ic_menu_unlock"
+                        app:tint="@color/white" />
+
+                    <!-- Delete Permanently -->
+                    <ImageView
+                        android:id="@+id/btn_action_delete"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginStart="4dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Delete"
+                        android:padding="8dp"
+                        android:src="@drawable/ic_delete"
+                        app:tint="@color/white" />
+
+                    <!-- Select All -->
+                    <ImageView
+                        android:id="@+id/btn_select_all"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginStart="4dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Select All"
+                        android:padding="8dp"
+                        android:src="@drawable/ic_select_all"
+                        app:tint="@color/white" />
+                </LinearLayout>
+            </RelativeLayout>
+        </FrameLayout>
+
+        <!-- Videos RecyclerView -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_vault"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/vault_toolbar_container"
+            android:clipToPadding="false"
+            android:paddingBottom="96dp" />
+
+        <!-- Empty State (Matching Photo 1) -->
+        <LinearLayout
+            android:id="@+id/layout_vault_empty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/vault_toolbar_container"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingHorizontal="40dp"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:src="@drawable/icon_common_empty_dark" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:gravity="center"
+                android:lineSpacingExtra="4dp"
+                android:text="Only you can watch video in private folder. Import video now."
+                android:textColor="#8e8e93"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-medium" />
+        </LinearLayout>
+
+        <!-- Floating Action Button (+ Add) (Matching Photo 1) -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_import"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="24dp"
+            android:contentDescription="Import video"
+            android:src="@drawable/ic_plus_white"
+            app:backgroundTint="#00c853"
+            app:tint="@color/white"
+            app:borderWidth="0dp"
+            app:elevation="6dp"
+            app:fabSize="normal" />
+
+    </RelativeLayout>
+</FrameLayout>

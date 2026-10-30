@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_bottom_sheet"
+    android:orientation="vertical"
+    android:paddingBottom="24dp">
+
+    <!-- Bottom Sheet Drag Handle -->
+    <View
+        android:layout_width="36dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="#44ffffff" />
+
+    <!-- Sheet Title -->
+    <TextView
+        android:id="@+id/sheet_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="middle"
+        android:fontFamily="sans-serif-medium"
+        android:maxLines="1"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="12dp"
+        android:text="Video Title"
+        android:textColor="#9e9e9e"
+        android:textSize="14sp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#1affffff" />
+
+    <!-- 1. Lock in Private Folder -->
+    <TextView
+        android:id="@+id/action_lock"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:background="?attr/selectableItemBackground"
+        android:drawablePadding="16dp"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="20dp"
+        android:text="Lock in Private Folder"
+        android:textColor="#ffffff"
+        android:textSize="15sp"
+        app:drawableStartCompat="@drawable/ic_menu_lock"
+        app:drawableTint="@color/white" />
+
+    <!-- 2. Convert to MP3 -->
+    <TextView
+        android:id="@+id/action_convert_mp3"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:background="?attr/selectableItemBackground"
+        android:drawablePadding="16dp"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="20dp"
+        android:text="Convert to MP3"
+        android:textColor="#ffffff"
+        android:textSize="15sp"
+        app:drawableStartCompat="@drawable/ic_convert_mp3"
+        app:drawableTint="@color/white" />
+
+    <!-- 3. Add to Playlist -->
+    <TextView
+        android:id="@+id/action_add_to_playlist"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:background="?attr/selectableItemBackground"
+        android:drawablePadding="16dp"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="20dp"
+        android:text="Add to playlist"
+        android:textColor="#ffffff"
+        android:textSize="15sp"
+        app:drawableStartCompat="@drawable/ic_menu_add_to_playlist"
+        app:drawableTint="@color/white" />
+
+    <!-- 4. Delete -->
+    <TextView
+        android:id="@+id/action_delete"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:background="?attr/selectableItemBackground"
+        android:drawablePadding="16dp"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="20dp"
+        android:text="Delete"
+        android:textColor="#ffffff"
+        android:textSize="15sp"
+        app:drawableStartCompat="@drawable/ic_menu_delete"
+        app:drawableTint="@color/white" />
+
+    <!-- 5. Share -->
+    <TextView
+        android:id="@+id/action_share"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:background="?attr/selectableItemBackground"
+        android:drawablePadding="16dp"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="20dp"
+        android:text="Share"
+        android:textColor="#ffffff"
+        android:textSize="15sp"
+        app:drawableStartCompat="@drawable/ic_menu_share"
+        app:drawableTint="@color/white" />
+
+    <!-- 6. Rename -->
+    <TextView
+        android:id="@+id/action_rename"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:background="?attr/selectableItemBackground"
+        android:drawablePadding="16dp"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="20dp"
+        android:text="Rename"
+        android:textColor="#ffffff"
+        android:textSize="15sp"
+        app:drawableStartCompat="@drawable/ic_rename"
+        app:drawableTint="@color/white" />
+
+    <!-- 7. Properties -->
+    <TextView
+        android:id="@+id/action_info"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:background="?attr/selectableItemBackground"
+        android:drawablePadding="16dp"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="20dp"
+        android:text="Properties"
+        android:textColor="#ffffff"
+        android:textSize="15sp"
+        app:drawableStartCompat="@drawable/ic_menu_info"
+        app:drawableTint="@color/white" />
+
+</LinearLayout>
+

@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_dialog_dark_top_radius"
+    android:orientation="vertical">
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp">
+
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@drawable/bg_common_btn_light"
+            android:padding="8dp"
+            android:src="@drawable/ic_back" />
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:text="@string/speed"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="24dp">
+
+            <!-- Speed value text -->
+            <TextView
+                android:id="@+id/speed_value_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                android:text="1.00x"
+                android:textColor="@color/accent_color"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <!-- Seekbar with min/max labels -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:paddingHorizontal="24dp">
+
+                <SeekBar
+                    android:id="@+id/speed_seekbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:max="100"
+                    android:progress="20"
+                    android:progressDrawable="@drawable/player_seekbar_progress"
+                    android:thumb="@drawable/player_seekbar_thumb" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/speed_seekbar"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginTop="4dp"
+                    android:text="0.25"
+                    android:textColor="#99ffffff"
+                    android:textSize="11sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/speed_seekbar"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginTop="4dp"
+                    android:text="4.0"
+                    android:textColor="#99ffffff"
+                    android:textSize="11sp" />
+            </RelativeLayout>
+
+            <!-- Quick speed buttons grid (4 per row) -->
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:columnCount="4"
+                android:paddingHorizontal="16dp"
+                android:rowCount="2">
+
+                <TextView
+                    android:id="@+id/speed_text_025"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="4dp"
+                    android:background="@drawable/bg_common_btn_light"
+                    android:gravity="center"
+                    android:text="0.25x"
+                    android:textColor="@color/white"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/speed_text_050"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="4dp"
+                    android:background="@drawable/bg_common_btn_light"
+                    android:gravity="center"
+                    android:text="0.5x"
+                    android:textColor="@color/white"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/speed_text_100"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="4dp"
+                    android:background="@drawable/bg_common_btn_light"
+                    android:gravity="center"
+                    android:text="1.0x"
+                    android:textColor="@color/white"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/speed_text_125"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="4dp"
+                    android:background="@drawable/bg_common_btn_light"
+                    android:gravity="center"
+                    android:text="1.25x"
+                    android:textColor="@color/white"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/speed_text_150"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="4dp"
+                    android:background="@drawable/bg_common_btn_light"
+                    android:gravity="center"
+                    android:text="1.5x"
+                    android:textColor="@color/white"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/speed_text_200"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="4dp"
+                    android:background="@drawable/bg_common_btn_light"
+                    android:gravity="center"
+                    android:text="2x"
+                    android:textColor="@color/white"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/speed_text_300"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="4dp"
+                    android:background="@drawable/bg_common_btn_light"
+                    android:gravity="center"
+                    android:text="3x"
+                    android:textColor="@color/white"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/speed_text_400"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="4dp"
+                    android:background="@drawable/bg_common_btn_light"
+                    android:gravity="center"
+                    android:text="4x"
+                    android:textColor="@color/white"
+                    android:textSize="13sp" />
+            </GridLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>
