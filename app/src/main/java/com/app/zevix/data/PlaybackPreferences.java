@@ -141,6 +141,44 @@ public class PlaybackPreferences {
         return prefs.getLong(KEY_RESUME_PREFIX + id, 0);
     }
 
+    public void savePlaybackPosition(String path, long id, long position) {
+        SharedPreferences.Editor editor = prefs.edit();
+        if (path != null) {
+            editor.putLong(KEY_RESUME_PREFIX + path.hashCode(), position);
+        }
+        if (id > 0) {
+            editor.putLong(KEY_RESUME_PREFIX + id, position);
+        }
+        editor.apply();
+    }
+
+    public long getSavedPosition(String path, long id) {
+        long pos = 0;
+        if (path != null) {
+            pos = prefs.getLong(KEY_RESUME_PREFIX + path.hashCode(), 0);
+        }
+        if (pos <= 0 && id > 0) {
+            pos = prefs.getLong(KEY_RESUME_PREFIX + id, 0);
+        }
+        return pos;
+    }
+
+    public void savePlayerVolume(int volume) {
+        prefs.edit().putInt("pref_player_volume", volume).apply();
+    }
+
+    public int getPlayerVolume() {
+        return prefs.getInt("pref_player_volume", -1);
+    }
+
+    public void savePlayerBrightness(float brightness) {
+        prefs.edit().putFloat("pref_player_brightness", brightness).apply();
+    }
+
+    public float getPlayerBrightness() {
+        return prefs.getFloat("pref_player_brightness", -1f);
+    }
+
     public void setSortOrder(int order) {
         prefs.edit().putInt(KEY_SORT_ORDER, order).apply();
     }

@@ -31,6 +31,7 @@ import android.util.DisplayMetrics;
 import android.util.LruCache;
 import android.util.Rational;
 import android.view.GestureDetector;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.TextureView;
 import android.view.View;
@@ -200,9 +201,12 @@ public class PlayerActivity extends AppCompatActivity {
     private TextView textProgress;
     private View arrowDown;
     private MediaMetadataRetriever thumbRetriever;
+    private String currentRetrieverVideoKey = null;
+    private volatile long latestThumbTargetTimeMs = -1;
     private long lastThumbRequestTime = 0;
     private final java.util.concurrent.ExecutorService thumbExecutor = java.util.concurrent.Executors.newSingleThreadExecutor();
-    private final LruCache<Long, Bitmap> thumbCache = new LruCache<>(30);
+    private final LruCache<Long, Bitmap> thumbCache = new LruCache<>(50);
+    private long lastSavedPosition = 0;
 
     private View appVideoVolumeBox;
     private TextView appVideoVolumeText;
@@ -459,10 +463,22 @@ public class PlayerActivity extends AppCompatActivity {
             screenshotContainer.setVisibility(preferences.isScreenshotButtonEnabled() ? View.VISIBLE : View.GONE);
         }
 
-        // Initialize volume level from device AudioManager
-        int streamMax = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-        int streamCurrent = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-        currentVolumeBoostLevel = streamMax > 0 ? Math.round((streamCurrent / (float) streamMax) * 15f) : 10;
+        // Restore remembered volume level
+        int savedVol = preferences.getPlayerVolume();
+        if (savedVol >= 0) {
+            setVolumeLevel(savedVol, false);
+        } else {
+            int streamMax = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+            int streamCurrent = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+            currentVolumeBoostLevel = streamMax > 0 ? Math.round((streamCurrent / (float) streamMax) * 15f) : 10;
+            preferences.savePlayerVolume(currentVolumeBoostLevel);
+        }
+
+        // Restore remembered brightness level
+        float savedBrightness = preferences.getPlayerBrightness();
+        if (savedBrightness >= 0) {
+            setBrightnessLevel(savedBrightness, false);
+        }
 
         // Floating A-B Repeat Card
         abRepeatLayout = findViewById(R.id.ab_repeat_layout);
@@ -560,10 +576,17 @@ public class PlayerActivity extends AppCompatActivity {
                     updateDurationDisplay();
                     initEqualizer();
                 } else if (playbackState == Player.STATE_ENDED) {
+                    if (currentVideo != null) {
+                        long dur = player != null && player.getDuration() > 0 ? player.getDuration() : 1000;
+                        preferences.savePlaybackPosition(currentVideo.getPath(), currentVideo.getId(), dur);
+                    }
                     if (stopAfterCurrentVideo) {
                         stopAfterCurrentVideo = false;
                         player.pause();
                         Toast.makeText(PlayerActivity.this, "Playback ended", Toast.LENGTH_SHORT).show();
+                    } else if (currentRepeatMode == Player.REPEAT_MODE_ONE) {
+                        player.seekTo(0);
+                        player.play();
                     } else {
                         playNextVideo();
                     }
@@ -621,6 +644,30 @@ public class PlayerActivity extends AppCompatActivity {
 
     private void playVideoAtIndex(int index) {
         if (index < 0 || index >= playlist.size()) return;
+
+        // Save position of current video before switching
+        if (player != null && currentVideo != null) {
+            long cur = player.getCurrentPosition();
+            long dur = player.getDuration();
+            if (dur > 0 && cur >= dur - 1500) {
+                preferences.savePlaybackPosition(currentVideo.getPath(), currentVideo.getId(), dur);
+            } else {
+                preferences.savePlaybackPosition(currentVideo.getPath(), currentVideo.getId(), cur);
+            }
+        }
+
+        // Reset thumbnail preview retriever & cache for new video
+        synchronized (this) {
+            if (thumbRetriever != null) {
+                try { thumbRetriever.release(); } catch (Exception ignored) {}
+                thumbRetriever = null;
+            }
+        }
+        thumbCache.evictAll();
+        currentRetrieverVideoKey = null;
+        latestThumbTargetTimeMs = -1;
+        lastSavedPosition = 0;
+
         currentIndex = index;
         currentVideo = playlist.get(currentIndex);
         appVideoTitle.setText(currentVideo.getTitle());
@@ -632,7 +679,7 @@ public class PlayerActivity extends AppCompatActivity {
         MediaItem mediaItem = MediaItem.fromUri(currentVideo.getUri());
         player.setMediaItem(mediaItem);
 
-        long savedPos = preferences.getPosition(currentVideo.getPath());
+        long savedPos = preferences.getSavedPosition(currentVideo.getPath(), currentVideo.getId());
         if (savedPos > 0 && (currentVideo.getDuration() <= 0 || savedPos < currentVideo.getDuration() - 2000)) {
             player.seekTo(savedPos);
         } else {
@@ -721,12 +768,7 @@ public class PlayerActivity extends AppCompatActivity {
             if (isHorizontalScrubbing || isUserSeeking || System.currentTimeMillis() - lastScrubEndTime < 300) {
                 return;
             }
-            if (player == null) return;
-            if (player.isPlaying()) {
-                player.pause();
-            } else {
-                player.play();
-            }
+            togglePlayPause();
         });
 
         // Prev & Next
@@ -924,6 +966,9 @@ public class PlayerActivity extends AppCompatActivity {
                 if (player != null && player.getDuration() > 0) {
                     long targetPos = (player.getDuration() * seekBar.getProgress()) / seekBar.getMax();
                     player.seekTo(targetPos);
+                    if (currentVideo != null) {
+                        preferences.savePlaybackPosition(currentVideo.getPath(), currentVideo.getId(), targetPos);
+                    }
                 }
                 isUserSeeking = false;
                 hideThumbSeekHUD();
@@ -936,8 +981,9 @@ public class PlayerActivity extends AppCompatActivity {
         if (playlist == null || playlist.isEmpty()) return;
         if (currentIndex < playlist.size() - 1) {
             playVideoAtIndex(currentIndex + 1);
-        } else if (currentRepeatMode == Player.REPEAT_MODE_ALL) {
-            playVideoAtIndex(0);
+        } else {
+            // Folders videos are over, don't start from first again. Return to folder files!
+            finish();
         }
     }
 
@@ -2498,6 +2544,19 @@ public class PlayerActivity extends AppCompatActivity {
         }
     }
 
+    private void togglePlayPause() {
+        if (player == null) return;
+        if (player.isPlaying()) {
+            player.pause();
+        } else {
+            player.play();
+        }
+        boolean playWhenReady = player.getPlayWhenReady();
+        if (appVideoPlay != null) {
+            appVideoPlay.setImageResource(playWhenReady ? R.drawable.ic_pause : R.drawable.ic_play);
+        }
+    }
+
     // Touch Gestures
     private void setupGestureDetector() {
         gestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
@@ -2515,18 +2574,31 @@ public class PlayerActivity extends AppCompatActivity {
 
             @Override
             public boolean onDoubleTap(MotionEvent e) {
-                if (isLocked || isHorizontalScrubbing || player == null || player.getDuration() <= 0) return false;
+                if (isLocked || isHorizontalScrubbing || player == null) return false;
                 int screenWidth = getResources().getDisplayMetrics().widthPixels;
-                long targetPos;
-                if (e.getX() < screenWidth / 2f) {
-                    targetPos = Math.max(0, player.getCurrentPosition() - 10000);
+                float x = e.getX();
+                if (x < screenWidth * 0.35f) {
+                    if (player.getDuration() <= 0) return false;
+                    long targetPos = Math.max(0, player.getCurrentPosition() - 10000);
+                    player.seekTo(targetPos);
+                    appVideoCurrentTime.setText(FormatUtils.formatDuration(targetPos));
+                    int progress = (int) ((targetPos * 1000) / player.getDuration());
+                    appVideoSeekBar.setProgress(progress);
+                    showSeekHUD(-10000, targetPos);
+                    hideHUDWithDelay(appVideoFastForwardBox);
+                } else if (x > screenWidth * 0.65f) {
+                    if (player.getDuration() <= 0) return false;
+                    long targetPos = Math.min(player.getDuration(), player.getCurrentPosition() + 10000);
+                    player.seekTo(targetPos);
+                    appVideoCurrentTime.setText(FormatUtils.formatDuration(targetPos));
+                    int progress = (int) ((targetPos * 1000) / player.getDuration());
+                    appVideoSeekBar.setProgress(progress);
+                    showSeekHUD(10000, targetPos);
+                    hideHUDWithDelay(appVideoFastForwardBox);
                 } else {
-                    targetPos = Math.min(player.getDuration(), player.getCurrentPosition() + 10000);
+                    // Centre region: Play / Pause
+                    togglePlayPause();
                 }
-                player.seekTo(targetPos);
-                appVideoCurrentTime.setText(FormatUtils.formatDuration(targetPos));
-                int progress = (int) ((targetPos * 1000) / player.getDuration());
-                appVideoSeekBar.setProgress(progress);
                 return true;
             }
 
@@ -2751,7 +2823,10 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     private void requestSeekThumbnail(long positionMs) {
-        long bucket = (positionMs / 500L) * 500L;
+        if (currentVideo == null) return;
+        latestThumbTargetTimeMs = positionMs;
+
+        long bucket = (positionMs / 300L) * 300L;
         Bitmap cached = thumbCache.get(bucket);
         if (cached != null) {
             if (thumbImageView != null) {
@@ -2760,33 +2835,61 @@ public class PlayerActivity extends AppCompatActivity {
             return;
         }
 
-        long now = System.currentTimeMillis();
-        if (now - lastThumbRequestTime < 60) return;
-        lastThumbRequestTime = now;
-
-        if (currentVideo == null || currentVideo.getPath() == null) return;
-        final String videoPath = currentVideo.getPath();
+        final VideoItem targetVideo = currentVideo;
+        final String videoKey = targetVideo.getPath() != null ? targetVideo.getPath() : String.valueOf(targetVideo.getId());
 
         thumbExecutor.execute(() -> {
             try {
-                if (thumbRetriever == null) {
-                    thumbRetriever = new MediaMetadataRetriever();
-                    thumbRetriever.setDataSource(videoPath);
+                if (currentVideo != targetVideo) return;
+
+                synchronized (this) {
+                    if (thumbRetriever == null || !videoKey.equals(currentRetrieverVideoKey)) {
+                        if (thumbRetriever != null) {
+                            try { thumbRetriever.release(); } catch (Exception ignored) {}
+                        }
+                        thumbRetriever = new MediaMetadataRetriever();
+                        if (targetVideo.getUri() != null) {
+                            thumbRetriever.setDataSource(PlayerActivity.this, targetVideo.getUri());
+                        } else if (targetVideo.getPath() != null) {
+                            thumbRetriever.setDataSource(targetVideo.getPath());
+                        }
+                        currentRetrieverVideoKey = videoKey;
+                    }
                 }
-                long timeUs = bucket * 1000L;
+
+                if (Math.abs(latestThumbTargetTimeMs - positionMs) > 1200) {
+                    return; // user moved on, discard stale frame decode
+                }
+
+                long timeUs = positionMs * 1000L;
                 Bitmap frame = null;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-                    frame = thumbRetriever.getScaledFrameAtTime(timeUs, MediaMetadataRetriever.OPTION_CLOSEST_SYNC, 320, 180);
+                    try {
+                        frame = thumbRetriever.getScaledFrameAtTime(timeUs, MediaMetadataRetriever.OPTION_CLOSEST, 320, 180);
+                    } catch (Throwable t) {
+                        try {
+                            frame = thumbRetriever.getScaledFrameAtTime(timeUs, MediaMetadataRetriever.OPTION_CLOSEST_SYNC, 320, 180);
+                        } catch (Throwable ignored) {}
+                    }
                 }
                 if (frame == null) {
-                    frame = thumbRetriever.getFrameAtTime(timeUs, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
+                    try {
+                        frame = thumbRetriever.getFrameAtTime(timeUs, MediaMetadataRetriever.OPTION_CLOSEST);
+                    } catch (Throwable t) {
+                        try {
+                            frame = thumbRetriever.getFrameAtTime(timeUs, MediaMetadataRetriever.OPTION_CLOSEST_SYNC);
+                        } catch (Throwable ignored) {}
+                    }
                 }
-                if (frame != null) {
+
+                if (frame != null && currentVideo == targetVideo) {
                     final Bitmap finalFrame = frame;
                     thumbCache.put(bucket, finalFrame);
                     runOnUiThread(() -> {
-                        if (thumbImageView != null && (isHorizontalScrubbing || isUserSeeking)) {
-                            thumbImageView.setImageBitmap(finalFrame);
+                        if (thumbImageView != null && (isHorizontalScrubbing || isUserSeeking) && currentVideo == targetVideo) {
+                            if (Math.abs(latestThumbTargetTimeMs - positionMs) <= 1200) {
+                                thumbImageView.setImageBitmap(finalFrame);
+                            }
                         }
                     });
                 }
@@ -2801,7 +2904,14 @@ public class PlayerActivity extends AppCompatActivity {
     }
 
     private void setVolumeLevel(int targetLevel) {
+        setVolumeLevel(targetLevel, true);
+    }
+
+    private void setVolumeLevel(int targetLevel, boolean showHUD) {
         currentVolumeBoostLevel = Math.max(0, Math.min(30, targetLevel));
+        if (preferences != null) {
+            preferences.savePlayerVolume(currentVolumeBoostLevel);
+        }
 
         int streamMax = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
         if (currentVolumeBoostLevel <= 15) {
@@ -2820,64 +2930,92 @@ public class PlayerActivity extends AppCompatActivity {
             }
         }
 
-        // Side Progress Bar
-        soundProgressLayout.setVisibility(View.VISIBLE);
-        soundProgress.setMax(30);
-        soundProgress.setProgress(Math.min(currentVolumeBoostLevel, 15));
-        soundProgress.setSecondaryProgress(currentVolumeBoostLevel);
-        if (appVideoVolumeIcon != null) {
-            appVideoVolumeIcon.setImageResource(currentVolumeBoostLevel == 0 ? R.drawable.ic_mute : R.drawable.ic_sound);
-        }
-
-        // Center Volume Box (authentic Zevix UX)
-        if (appVideoVolumeBox != null) {
-            appVideoVolumeBox.setVisibility(View.VISIBLE);
-            if (appVideoVolumeText != null) {
-                appVideoVolumeText.setText(currentVolumeBoostLevel > 15 ? R.string.volume_boost : R.string.volume);
-                appVideoVolumeText.append(" :");
+        if (showHUD) {
+            // Side Progress Bar
+            soundProgressLayout.setVisibility(View.VISIBLE);
+            soundProgress.setMax(30);
+            soundProgress.setProgress(Math.min(currentVolumeBoostLevel, 15));
+            soundProgress.setSecondaryProgress(currentVolumeBoostLevel);
+            if (appVideoVolumeIcon != null) {
+                appVideoVolumeIcon.setImageResource(currentVolumeBoostLevel == 0 ? R.drawable.ic_mute : R.drawable.ic_sound);
             }
-            if (currentVolumeBoostLevel == 0) {
-                appVideoVolume.setText(R.string.off);
-                if (appVideoVolumeBoost != null) appVideoVolumeBoost.setVisibility(View.GONE);
-            } else if (currentVolumeBoostLevel > 15) {
-                appVideoVolume.setText("15");
-                if (appVideoVolumeBoost != null) {
-                    appVideoVolumeBoost.setVisibility(View.VISIBLE);
-                    appVideoVolumeBoost.setText(" (+" + (currentVolumeBoostLevel - 15) + ")");
+
+            // Center Volume Box (authentic Zevix UX)
+            if (appVideoVolumeBox != null) {
+                appVideoVolumeBox.setVisibility(View.VISIBLE);
+                if (appVideoVolumeText != null) {
+                    appVideoVolumeText.setText(currentVolumeBoostLevel > 15 ? R.string.volume_boost : R.string.volume);
+                    appVideoVolumeText.append(" :");
                 }
-            } else {
-                appVideoVolume.setText(String.valueOf(currentVolumeBoostLevel));
-                if (appVideoVolumeBoost != null) appVideoVolumeBoost.setVisibility(View.GONE);
+                if (currentVolumeBoostLevel == 0) {
+                    appVideoVolume.setText(R.string.off);
+                    if (appVideoVolumeBoost != null) appVideoVolumeBoost.setVisibility(View.GONE);
+                } else if (currentVolumeBoostLevel > 15) {
+                    appVideoVolume.setText("15");
+                    if (appVideoVolumeBoost != null) {
+                        appVideoVolumeBoost.setVisibility(View.VISIBLE);
+                        appVideoVolumeBoost.setText(" (+" + (currentVolumeBoostLevel - 15) + ")");
+                    }
+                } else {
+                    appVideoVolume.setText(String.valueOf(currentVolumeBoostLevel));
+                    if (appVideoVolumeBoost != null) appVideoVolumeBoost.setVisibility(View.GONE);
+                }
             }
         }
     }
 
     private void adjustBrightness(float delta) {
         WindowManager.LayoutParams lp = getWindow().getAttributes();
-        float current = lp.screenBrightness < 0 ? 0.5f : lp.screenBrightness;
+        float current = lp.screenBrightness < 0 ? (preferences != null && preferences.getPlayerBrightness() >= 0 ? preferences.getPlayerBrightness() : 0.5f) : lp.screenBrightness;
         float target = Math.max(0.01f, Math.min(1.0f, current + delta));
-        setBrightnessLevel(target);
+        setBrightnessLevel(target, true);
     }
 
     private void setBrightnessLevel(float brightness) {
+        setBrightnessLevel(brightness, true);
+    }
+
+    private void setBrightnessLevel(float brightness, boolean showHUD) {
         WindowManager.LayoutParams lp = getWindow().getAttributes();
         lp.screenBrightness = brightness;
         getWindow().setAttributes(lp);
 
-        int percent = Math.round(brightness * 100f);
+        if (preferences != null) {
+            preferences.savePlayerBrightness(brightness);
+        }
 
-        // Side Progress Bar
-        brightnessProgressLayout.setVisibility(View.VISIBLE);
-        brightnessProgress.setMax(100);
-        brightnessProgress.setProgress(percent);
+        if (showHUD) {
+            int percent = Math.round(brightness * 100f);
 
-        // Center Brightness Box
-        if (appVideoBrightnessBox != null) {
-            appVideoBrightnessBox.setVisibility(View.VISIBLE);
-            if (appVideoBrightness != null) {
-                appVideoBrightness.setText(percent + "%");
+            // Side Progress Bar
+            brightnessProgressLayout.setVisibility(View.VISIBLE);
+            brightnessProgress.setMax(100);
+            brightnessProgress.setProgress(percent);
+
+            // Center Brightness Box
+            if (appVideoBrightnessBox != null) {
+                appVideoBrightnessBox.setVisibility(View.VISIBLE);
+                if (appVideoBrightness != null) {
+                    appVideoBrightness.setText(percent + "%");
+                }
             }
         }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
+            adjustVolume(1 / 30f);
+            hideHUDWithDelay(appVideoVolumeBox);
+            hideHUDWithDelay(soundProgressLayout);
+            return true;
+        } else if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
+            adjustVolume(-1 / 30f);
+            hideHUDWithDelay(appVideoVolumeBox);
+            hideHUDWithDelay(soundProgressLayout);
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     private void showSeekHUD(long deltaMillis, long targetPos) {
@@ -2972,6 +3110,12 @@ public class PlayerActivity extends AppCompatActivity {
                     long buffered = player.getBufferedPosition();
                     int bufferedProgress = (int) ((buffered * 1000) / duration);
                     appVideoSeekBar.setSecondaryProgress(bufferedProgress);
+
+                    // Periodically save playback position
+                    if (pos > 0 && currentVideo != null && (Math.abs(pos - lastSavedPosition) >= 2000 || lastSavedPosition == 0)) {
+                        lastSavedPosition = pos;
+                        preferences.savePlaybackPosition(currentVideo.getPath(), currentVideo.getId(), pos);
+                    }
                 }
             }
             progressHandler.postDelayed(this, 500);
@@ -2982,7 +3126,7 @@ public class PlayerActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         if (player != null && currentVideo != null) {
-            preferences.savePosition(currentVideo.getPath(), player.getCurrentPosition());
+            preferences.savePlaybackPosition(currentVideo.getPath(), currentVideo.getId(), player.getCurrentPosition());
             if (!isBackgroundPlayEnabled && !isInPictureInPictureMode()) {
                 player.pause();
             }

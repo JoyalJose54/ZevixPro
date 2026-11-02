@@ -61,7 +61,7 @@ public class RecentVideoAdapter extends RecyclerView.Adapter<RecentVideoAdapter.
         holder.tvTitle.setText(video.getTitle());
         holder.tvDuration.setText(FormatUtils.formatDuration(video.getDuration()));
 
-        long savedPos = preferences.getPlaybackPosition(video.getId());
+        long savedPos = preferences.getSavedPosition(video.getPath(), video.getId());
         if (video.getDuration() > 0 && savedPos > 0) {
             int progress = (int) ((savedPos * 100) / video.getDuration());
             holder.progressBar.setProgress(Math.min(100, Math.max(1, progress)));

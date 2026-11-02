@@ -54,6 +54,18 @@
                 android:textSize="9sp"
                 android:textStyle="bold"
                 android:visibility="gone" />
+
+            <!-- Playback Progress Indicator -->
+            <ProgressBar
+                android:id="@+id/pb_video_progress"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="3.5dp"
+                android:layout_gravity="bottom"
+                android:max="1000"
+                android:progress="0"
+                android:progressDrawable="@drawable/bg_recent_progress"
+                android:visibility="gone" />
         </FrameLayout>
     </androidx.cardview.widget.CardView>
 

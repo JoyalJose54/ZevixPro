@@ -146,6 +146,10 @@ public class FolderVideosActivity extends AppCompatActivity implements VideoAdap
             Intent intent = new Intent(this, AppLockVerifyActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(intent);
+            return;
+        }
+        if (adapter != null) {
+            adapter.notifyDataSetChanged();
         }
     }
 

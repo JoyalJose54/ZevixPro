@@ -12,10 +12,12 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.app.zevix.R;
+import com.app.zevix.data.PlaybackPreferences;
 import com.app.zevix.model.VideoItem;
 import com.app.zevix.utils.FormatUtils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import android.widget.ProgressBar;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -38,6 +40,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
     }
 
     private final Context context;
+    private final PlaybackPreferences preferences;
     private List<VideoItem> videoList;
     private final OnVideoClickListener listener;
     private OnVideoLongClickListener longClickListener;
@@ -49,6 +52,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
 
     public VideoAdapter(Context context, List<VideoItem> videoList, OnVideoClickListener listener) {
         this.context = context;
+        this.preferences = new PlaybackPreferences(context);
         this.videoList = videoList != null ? videoList : new ArrayList<>();
         this.listener = listener;
     }
@@ -194,6 +198,17 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
                 .error(R.drawable.play_png)
                 .into(holder.ivThumbnail);
 
+        if (holder.pbProgress != null) {
+            long savedPos = preferences.getSavedPosition(video.getPath(), video.getId());
+            if (video.getDuration() > 0 && savedPos > 0) {
+                int progress = (int) ((savedPos * 1000) / video.getDuration());
+                holder.pbProgress.setProgress(Math.min(1000, Math.max(15, progress)));
+                holder.pbProgress.setVisibility(View.VISIBLE);
+            } else {
+                holder.pbProgress.setVisibility(View.GONE);
+            }
+        }
+
         if (isMultiSelectMode) {
             holder.btnMore.setVisibility(View.GONE);
             holder.cbSelect.setVisibility(View.VISIBLE);
@@ -239,6 +254,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
         TextView tvInfo;
         ImageView btnMore;
         CheckBox cbSelect;
+        ProgressBar pbProgress;
 
         public VideoViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -249,6 +265,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
             tvInfo = itemView.findViewById(R.id.tv_video_info);
             btnMore = itemView.findViewById(R.id.btn_more);
             cbSelect = itemView.findViewById(R.id.cb_select);
+            pbProgress = itemView.findViewById(R.id.pb_video_progress);
         }
     }
 }
