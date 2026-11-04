@@ -784,6 +784,19 @@ class _DesktopPlayerScreenState extends State<DesktopPlayerScreen> with WindowLi
                                       subtitlesEnabled: _subtitlesEnabled,
                                       onToggleSubtitles: (enabled) {
                                         setState(() => _subtitlesEnabled = enabled);
+                                        if (!enabled) {
+                                          _player.setSubtitleTrack(SubtitleTrack.no());
+                                        } else {
+                                          if (_selectedSubtitle.id == 'no') {
+                                            final available = _player.state.tracks.subtitle.where((t) => t.id != 'no').toList();
+                                            if (available.isNotEmpty) {
+                                              _selectedSubtitle = available.first;
+                                            } else {
+                                              _selectedSubtitle = SubtitleTrack.auto();
+                                            }
+                                          }
+                                          _player.setSubtitleTrack(_selectedSubtitle);
+                                        }
                                         _applyMpvSubtitles();
                                         _showHud(
                                           enabled ? Icons.subtitles : Icons.subtitles_off,
@@ -796,7 +809,7 @@ class _DesktopPlayerScreenState extends State<DesktopPlayerScreen> with WindowLi
                                         _player.setSubtitleTrack(track);
                                         setState(() {
                                           _selectedSubtitle = track;
-                                          _subtitlesEnabled = true;
+                                          _subtitlesEnabled = track.id != 'no';
                                         });
                                         _applyMpvSubtitles();
                                         _showHud(Icons.subtitles, "Subtitle: ${track.title ?? track.language ?? track.id}");
@@ -879,28 +892,39 @@ class _DesktopPlayerScreenState extends State<DesktopPlayerScreen> with WindowLi
   }
 
   // Passing controls: NoVideoControls prevents media_kit from injecting its default seekbar!
+  // Disabling subtitleViewConfiguration removes duplicate Flutter subtitle overlay (MPV renders subtitles directly).
   Widget _buildVideoViewport() {
-    Widget videoWidget;
+    BoxFit fit = BoxFit.contain;
     switch (_aspectRatioMode) {
       case VideoAspectRatioMode.fit:
-        videoWidget = Video(controller: _videoController, fit: BoxFit.contain, controls: NoVideoControls);
+        fit = BoxFit.contain;
         break;
       case VideoAspectRatioMode.stretch:
-        videoWidget = Video(controller: _videoController, fit: BoxFit.fill, controls: NoVideoControls);
+        fit = BoxFit.fill;
         break;
       case VideoAspectRatioMode.sixteenNine:
-        videoWidget = AspectRatio(aspectRatio: 16 / 9, child: Video(controller: _videoController, fit: BoxFit.cover, controls: NoVideoControls));
-        break;
       case VideoAspectRatioMode.fourThree:
-        videoWidget = AspectRatio(aspectRatio: 4 / 3, child: Video(controller: _videoController, fit: BoxFit.cover, controls: NoVideoControls));
-        break;
       case VideoAspectRatioMode.zoomCrop:
-        videoWidget = Video(controller: _videoController, fit: BoxFit.cover, controls: NoVideoControls);
+        fit = BoxFit.cover;
         break;
       case VideoAspectRatioMode.original:
-        videoWidget = Video(controller: _videoController, fit: BoxFit.none, controls: NoVideoControls);
+        fit = BoxFit.none;
         break;
     }
+
+    Widget videoWidget = Video(
+      controller: _videoController,
+      fit: fit,
+      controls: NoVideoControls,
+      subtitleViewConfiguration: const SubtitleViewConfiguration(visible: false),
+    );
+
+    if (_aspectRatioMode == VideoAspectRatioMode.sixteenNine) {
+      videoWidget = AspectRatio(aspectRatio: 16 / 9, child: videoWidget);
+    } else if (_aspectRatioMode == VideoAspectRatioMode.fourThree) {
+      videoWidget = AspectRatio(aspectRatio: 4 / 3, child: videoWidget);
+    }
+
     return RepaintBoundary(child: videoWidget);
   }
 
