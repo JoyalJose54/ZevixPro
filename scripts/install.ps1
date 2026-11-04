@@ -66,6 +66,7 @@ if (Test-Path `$startShortcut) { Remove-Item -Force `$startShortcut }
 # Remove Registry Entries
 Remove-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\ZevixPro" -Recurse -Force
 Remove-Item -Path "HKCU:\Software\Classes\Applications\zevix_pro.exe" -Recurse -Force
+Remove-Item -Path "HKCU:\Software\Classes\ZevixPro.Video" -Recurse -Force
 
 Write-Host "Registry entries and shortcuts removed." -ForegroundColor Green
 Write-Host "Removing application files..." -ForegroundColor Yellow
@@ -126,7 +127,7 @@ Set-ItemProperty -Path $RegPath -Name "NoModify" -Value 1 -Type DWord
 Set-ItemProperty -Path $RegPath -Name "NoRepair" -Value 1 -Type DWord
 Set-ItemProperty -Path $RegPath -Name "Comments" -Value "Modern high-performance media player built with Flutter and libmpv."
 
-# Register Open With capabilities for video formats
+# Register Open With capabilities and ProgID for video formats
 $AppReg = "HKCU:\Software\Classes\Applications\zevix_pro.exe\shell\open\command"
 if (-not (Test-Path $AppReg)) {
     New-Item -Path $AppReg -Force | Out-Null
@@ -141,6 +142,17 @@ $extensions = @(".mp4", ".mkv", ".avi", ".mov", ".webm", ".flv", ".wmv", ".m4v",
 foreach ($ext in $extensions) {
     Set-ItemProperty -Path $SupportedTypesReg -Name $ext -Value ""
 }
+
+$ProgId = "HKCU:\Software\Classes\ZevixPro.Video"
+if (-not (Test-Path "$ProgId\shell\open\command")) {
+    New-Item -Path "$ProgId\shell\open\command" -Force | Out-Null
+}
+Set-ItemProperty -Path "$ProgId" -Name "(default)" -Value "Zevix Pro Video"
+if (-not (Test-Path "$ProgId\DefaultIcon")) {
+    New-Item -Path "$ProgId\DefaultIcon" -Force | Out-Null
+}
+Set-ItemProperty -Path "$ProgId\DefaultIcon" -Name "(default)" -Value "$InstallDir\zevix_pro.exe,0"
+Set-ItemProperty -Path "$ProgId\shell\open\command" -Name "(default)" -Value "`"$InstallDir\zevix_pro.exe`" `"%1`""
 
 Write-Host "Registered in Windows Installed Apps (HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\ZevixPro)" -ForegroundColor Green
 

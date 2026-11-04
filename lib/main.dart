@@ -13,8 +13,34 @@ import 'services/trash_service.dart';
 import 'theme/app_theme.dart';
 import 'ui/screens/splash_screen.dart';
 
-Future<void> main() async {
+String? _parseInitialFilePath(List<String> args) {
+  for (final raw in args) {
+    var candidate = raw.trim();
+    if (candidate.startsWith('"') && candidate.endsWith('"') && candidate.length > 1) {
+      candidate = candidate.substring(1, candidate.length - 1).trim();
+    }
+    if (candidate.startsWith("'") && candidate.endsWith("'") && candidate.length > 1) {
+      candidate = candidate.substring(1, candidate.length - 1).trim();
+    }
+    if (candidate.startsWith('file://')) {
+      try {
+        candidate = Uri.parse(candidate).toFilePath();
+      } catch (_) {}
+    }
+    if (candidate.isNotEmpty && !candidate.startsWith('-')) {
+      final file = File(candidate);
+      if (file.existsSync()) {
+        return file.absolute.path;
+      }
+    }
+  }
+  return null;
+}
+
+Future<void> main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  final initialFilePath = _parseInitialFilePath(args);
 
   // Initialize MediaKit audio/video playback engine
   MediaKit.ensureInitialized();
@@ -59,13 +85,23 @@ Future<void> main() async {
         ),
         ChangeNotifierProvider.value(value: playlistProv),
       ],
-      child: const ZevixProApp(),
+      child: ZevixProApp(
+        initialFilePath: initialFilePath,
+        preferences: prefs,
+      ),
     ),
   );
 }
 
 class ZevixProApp extends StatelessWidget {
-  const ZevixProApp({super.key});
+  final String? initialFilePath;
+  final PlaybackPreferences preferences;
+
+  const ZevixProApp({
+    super.key,
+    this.initialFilePath,
+    required this.preferences,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +109,10 @@ class ZevixProApp extends StatelessWidget {
       title: 'Zevix Pro',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkTheme,
-      home: const SplashScreen(),
+      home: SplashScreen(
+        initialFilePath: initialFilePath,
+        preferences: preferences,
+      ),
     );
   }
 }

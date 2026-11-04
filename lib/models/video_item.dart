@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:path/path.dart' as p;
 
 class VideoItem {
   final int id;
@@ -86,5 +87,49 @@ class VideoItem {
     folderName: json['folderName'] as String? ?? '',
     folderPath: json['folderPath'] as String? ?? '',
   );
+
+  factory VideoItem.fromPath(String filePath) {
+    final file = File(filePath);
+    final stat = file.existsSync() ? file.statSync() : null;
+    final parentDir = p.dirname(filePath);
+    final parentName = p.basename(parentDir);
+    final fileName = p.basename(filePath);
+    return VideoItem(
+      id: filePath.hashCode,
+      title: p.basenameWithoutExtension(fileName),
+      displayName: fileName,
+      path: filePath,
+      duration: Duration.zero,
+      size: stat?.size ?? 0,
+      dateModified: stat?.modified ?? DateTime.now(),
+      width: 0,
+      height: 0,
+      folderName: parentName.isEmpty ? "Videos" : parentName,
+      folderPath: parentDir,
+    );
+  }
+
+  static List<VideoItem> createPlaylistFromPath(String filePath) {
+    final target = VideoItem.fromPath(filePath);
+    try {
+      final parentDir = Directory(p.dirname(filePath));
+      if (parentDir.existsSync()) {
+        const videoExtensions = {'.mp4', '.mkv', '.avi', '.mov', '.webm', '.flv', '.wmv', '.m4v', '.ts'};
+        final files = parentDir
+            .listSync()
+            .whereType<File>()
+            .where((f) => videoExtensions.contains(p.extension(f.path).toLowerCase()))
+            .toList();
+
+        files.sort((a, b) => p.basename(a.path).toLowerCase().compareTo(p.basename(b.path).toLowerCase()));
+
+        final list = files.map((f) => VideoItem.fromPath(f.path)).toList();
+        if (list.isNotEmpty) {
+          return list;
+        }
+      }
+    } catch (_) {}
+    return [target];
+  }
 }
 
